@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تأیید کد بازیابی رمز عبور{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container px-4 px-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+
+                <div class="card shadow border-0 mt-5">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center text-primary mb-4">تأیید کد بازیابی رمز عبور</h3>
+                        <p class="text-muted text-center mb-4">
+                            لطفاً کدی که به ایمیل شما ارسال شده است را وارد کرده و رمز عبور جدید تعیین کنید.
+                        </p>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <form method="post" novalidate>
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                {{ form.code.label_tag }}
+                                {{ form.code }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.new_password.label_tag }}
+                                {{ form.new_password }}
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100">بررسی کد و تغییر رمز</button>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <a href="{% url 'password_reset_request' %}" class="text-decoration-none small text-muted">
+                                ارسال مجدد کد بازیابی
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="{% url 'login' %}" class="btn btn-link">بازگشت به ورود</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

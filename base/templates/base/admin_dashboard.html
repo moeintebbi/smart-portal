@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}داشبورد مدیریت{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="text-primary">داشبورد مدیریت دوره‌ها</h2>
+        <a href="{% url 'add_course' %}" class="btn btn-success">
+            + افزودن دوره جدید
+        </a>
+    </div>
+
+    {% if courses %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">عنوان دوره</th>
+                    <th scope="col">ظرفیت باقی‌مانده</th>
+                    <th scope="col">تعداد ثبت‌نام</th>
+                    <th scope="col">جزئیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.capacity }}</td>
+                    <td>{{ course.registration_set.count }}</td>
+                    <td>
+                        <a href="{% url 'course_detail_admin' course.id %}" class="btn btn-outline-primary btn-sm">
+                            مشاهده
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center mt-4">
+        هیچ دوره‌ای تعریف نشده است.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

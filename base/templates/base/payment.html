@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg text-center">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">تأیید پرداخت برای دوره: {{ course.title }}</h4>
+        </div>
+        <div class="card-body py-5">
+            <p class="lead mb-4">لطفاً وضعیت پرداخت خود را انتخاب کنید:</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center gap-4">
+                    <button type="submit" name="success" value="success" class="btn btn-success btn-lg px-4">
+                        پرداخت موفق
+                    </button>
+                    <button type="submit" name="fail" value="failed" class="btn btn-danger btn-lg px-4">
+                        پرداخت ناموفق
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

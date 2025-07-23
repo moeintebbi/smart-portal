@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}افزودن دوره جدید{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">افزودن دوره جدید</h2>
+
+    <form method="post" enctype="multipart/form-data" class="border p-4 shadow rounded bg-light">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn btn-success w-100">ثبت دوره</button>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'admin_dashboard' %}" class="text-decoration-none">
+            ⬅ بازگشت به داشبورد
+        </a>
+    </div>
+</div>
+{% endblock %}

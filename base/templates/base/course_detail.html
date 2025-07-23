@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}جزئیات دوره{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container px-4 px-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+
+                <div class="card shadow border-0 mb-4">
+                    {% if course.image %}
+                        <img src="{{ course.image.url }}" class="card-img-top rounded-0" alt="{{ course.title }}" style="height: 300px; object-fit: cover;">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h3 class="card-title text-primary mb-3">{{ course.title }}</h3>
+                        <p class="card-text text-muted">{{ course.descriptions }}</p>
+
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item">
+                                <strong>روزهای برگزاری:</strong>
+                                {% if course.days.all %}
+                                    {% for day in course.days.all %}
+                                        {{ day.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">مشخص نشده</span>
+                                {% endif %}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>ساعت برگزاری:</strong>
+                                {{ course.start_time|time:"H:i" }} تا {{ course.end_time|time:"H:i" }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>ظرفیت باقی‌مانده:</strong> {{ course.capacity }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>پیش‌نیازها:</strong>
+                                {% if course.prerequisites.all %}
+                                    {% for prereq in course.prerequisites.all %}
+                                        {{ prereq.title }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">ندارد</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+
+                        <div class="text-center mt-4 d-flex flex-column flex-md-row justify-content-center gap-3">
+                            {% if user.is_authenticated and user.is_student %}
+                                <a href="{% url 'course_register' course.id %}" class="btn btn-primary btn-lg">ثبت‌نام در این دوره</a>
+                            {% endif %}
+                            <a href="{% url 'courses_list' %}" class="btn btn-outline-secondary btn-lg">⬅ بازگشت به لیست دوره‌ها</a>
+                        </div>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <div class="card shadow border-0 mb-4">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">ثبت نظر شما</h4>
+
+                            {% if can_comment %}
+                                <form method="post" novalidate>
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        {{ form.content.label_tag }}
+                                        {{ form.content }}
+                                        {% if form.content.errors %}
+                                            <div class="text-danger small">{{ form.content.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <button type="submit" class="btn btn-success">ارسال نظر</button>
+                                </form>
+                            {% else %}
+                                <div class="alert alert-warning mb-0">
+                                    فقط کاربرانی که در این دوره ثبت‌نام کرده‌اند می‌توانند نظر دهند.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if comments %}
+                    <div class="card shadow border-0">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">نظرات کاربران</h4>
+                            {% for comment in comments %}
+                                <div class="border-bottom pb-3 mb-3">
+                                    <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong><br>
+                                    <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+                                    <p class="mb-0 mt-2">{{ comment.content }}</p>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">نظری ثبت نشده است.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

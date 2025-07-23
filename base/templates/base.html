@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}پورتال آموزشی{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'creative/css/styles.css' %}">
+
+    <style>
+        body {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert {
+            animation: slideDown 0.5s ease;
+        }
+
+        .navbar .navbar-nav {
+            flex-direction: row-reverse;
+        }
+
+        /* برای قرارگیری دقیق منوها */
+        .navbar .left-buttons {
+            margin-left: auto;
+        }
+
+        .navbar .right-buttons {
+            margin-right: auto;
+        }
+
+        .nav-link.btn {
+            padding: 0.5rem 1rem;
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body id="page-top">
+
+    {% if request.path != '/' %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container-fluid">
+
+            <!-- لوگو یا عنوان سایت -->
+            <a class="navbar-brand" href="{% url 'home' %}">خانه</a>
+
+            <!-- دکمه موبایل -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="تغییر ناوبری">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- آیتم‌های منو -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <!-- سمت چپ: منوهای اصلی -->
+                <ul class="navbar-nav left-buttons mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'courses_list' %}">دوره‌ها</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_courses' %}">دوره‌های من</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">ورود</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">ثبت‌نام</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <!-- سمت راست: دکمه خروج -->
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav right-buttons mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link p-0" style="text-decoration: none;">خروج</button>
+                        </form>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    {% if messages %}
+    <div id="message-container" style="position: fixed; top: 20px; right: 50%; transform: translateX(50%); z-index: 9999; width: 90%; max-width: 500px;">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'creative/js/scripts.js' %}"></script>
+    <script>
+        setTimeout(() => {
+            const alert = document.querySelector('#message-container .alert');
+            if (alert) {
+                alert.classList.remove('show');
+                alert.classList.add('fade');
+            }
+        }, 4000);
+    </script>
+</body>
+</html>

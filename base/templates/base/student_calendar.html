@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}برنامه کلاسی من{% endblock %}
+{% block content %}
+<div class="container my-4">
+    <h3 class="mb-4 text-center text-primary">📅 برنامه کلاس‌های من</h3>
+    <div id='calendar'></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            allDaySlot: false,
+            firstDay: 6,  // شروع از شنبه
+            locale: 'fa',
+            dir: 'rtl',
+            slotMinTime: "07:00:00",
+            slotMaxTime: "22:00:00",
+            height: 'auto',
+            events: {{ events|safe }}
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

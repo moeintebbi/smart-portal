@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}لیست دوره‌ها{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container px-4 px-lg-5">
+        <div class="text-center mb-5">
+            <h2 class="mt-0">دوره‌های موجود</h2>
+            <hr class="divider mx-auto" style="max-width: 150px;" />
+        </div>
+
+        {% if courses %}
+        <div class="row gx-4 gx-lg-5">
+            {% for course in courses %}
+            <div class="col-lg-4 col-md-6 mb-4 d-flex">
+                <div class="card h-100 shadow border-0 flex-fill">
+
+                    {% if course.image %}
+                        <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'default-course.jpg' %}" class="card-img-top" alt="تصویر دوره پیش‌فرض" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text flex-grow-1">{{ course.descriptions|truncatewords:20 }}</p>
+                        <p><strong>روزها:</strong>
+                            {% for day in course.days.all %}
+                                {{ day.name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                <span class="text-muted">مشخص نشده</span>
+                            {% endfor %}
+                        </p>
+                        <p><strong>ساعت:</strong> {{ course.start_time|time:"H:i" }} تا {{ course.end_time|time:"H:i" }}</p>
+                        <p><strong>ظرفیت:</strong> {{ course.capacity }}</p>
+                    </div>
+
+                    <div class="card-footer text-center bg-white border-0">
+                        <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-primary btn-sm me-2">مشاهده جزئیات</a>
+                        {% if user.is_authenticated and user.is_student %}
+                            <a href="{% url 'course_register' course.id %}" class="btn btn-primary btn-sm">ثبت‌نام</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="text-center text-muted">هیچ دوره‌ای برای نمایش وجود ندارد.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

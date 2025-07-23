@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ورود | پورتال آموزشی</title>
+  <link rel="icon" type="image/png" href="{% static 'volt/assets/img/favicon/favicon-32x32.png' %}" />
+  <link rel="stylesheet" href="{% static 'volt/css/volt.css' %}" />
+</head>
+
+<body class="bg-soft d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+  <main>
+    <section class="container">
+      <div class="row justify-content-center form-bg-image"
+           data-background-lg="{% static 'volt/assets/img/illustrations/signin.svg' %}">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+          <div class="bg-white shadow border-0 rounded p-4 p-lg-5 w-100 fmxw-500">
+
+            <div class="text-center mb-4">
+              <h1 class="h3">ورود به سامانه</h1>
+            </div>
+
+            {% if form.errors %}
+              <div class="alert alert-danger">
+                لطفاً نام کاربری و رمز عبور صحیح وارد کنید.
+              </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+              {% csrf_token %}
+
+              <div class="form-group mb-3">
+                <label for="id_username">نام کاربری</label>
+                <input type="text" name="username" autofocus required class="form-control" id="id_username">
+              </div>
+
+              <div class="form-group mb-1">
+                <label for="id_password">رمز عبور</label>
+                <input type="password" name="password" required class="form-control" id="id_password">
+              </div>
+
+              <div class="text-end mb-3">
+                <a href="{% url 'password_reset_request' %}" class="text-decoration-none small text-muted">
+                  فراموشی رمز عبور؟
+                </a>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                  <label class="form-check-label" for="remember">
+                    مرا به خاطر بسپار
+                  </label>
+                </div>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-warning">ورود</button>
+              </div>
+            </form>
+
+            <div class="text-center mt-4">
+              <span class="text-muted">حساب کاربری ندارید؟</span>
+              <a href="{% url 'register' %}" class="fw-bold">ثبت‌نام</a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="{% static 'volt/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'volt/assets/js/volt.js' %}"></script>
+</body>
+</html>

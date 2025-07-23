@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}ویرایش دوره{% endblock %}
+
+{% block content %}
+<section class="page-section py-5" style="background: #f8f9fa;">
+    <div class="container px-4 px-lg-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <div class="card shadow-lg rounded-4 border-0">
+                    <div class="card-header bg-primary text-white rounded-top-4 py-4 text-center">
+                        <h2 class="fw-bold mb-0">ویرایش دوره: <span class="text-warning">{{ course.title }}</span></h2>
+                    </div>
+
+                    <div class="card-body p-5">
+                        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            {{ form.as_p }}
+
+                            <div class="d-flex justify-content-center mt-4">
+                                <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                                    ذخیره تغییرات
+                                </button>
+                            </div>
+                        </form>
+
+                        {% if course.image %}
+                        <div class="card mt-5 shadow-sm rounded-3 p-3 border">
+                            <h5 class="mb-3">تصویر فعلی دوره</h5>
+                            <img src="{{ course.image.url }}" alt="{{ course.title }}" class="img-fluid rounded-3 mx-auto d-block" style="max-height: 280px; object-fit: cover;">
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-footer bg-light rounded-bottom-4 d-flex justify-content-center py-3">
+                        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-primary px-4 fw-semibold">
+                            ← بازگشت به داشبورد
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Example starter JavaScript for disabling form submissions if there are invalid fields
+(() => {
+  'use strict'
+  const forms = document.querySelectorAll('.needs-validation')
+
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+</script>
+{% endblock %}
