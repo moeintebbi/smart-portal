@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت درس‌نامه‌ها{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-4">درس‌نامه‌های دوره: {{ course.title }}</h4>
+
+            <div class="mb-3 text-end">
+                <a href="{% url 'lesson_create' course.id %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> درس‌نامه جدید
+                </a>
+            </div>
+
+            {% if lessons %}
+                <ul class="list-group">
+                    {% for lesson in lessons %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>درس {{ lesson.order }}:</strong> {{ lesson.title }}
+                            </div>
+                            <div>
+                                <a href="{% url 'lesson_edit' course.id lesson.id %}" class="btn btn-sm btn-outline-primary me-2">ویرایش</a>
+                                <a href="{% url 'lesson_delete' course.id lesson.id %}" class="btn btn-sm btn-outline-danger">حذف</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-info">هنوز هیچ درس‌نامه‌ای اضافه نشده است.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

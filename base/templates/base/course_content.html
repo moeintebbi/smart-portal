@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}محتوای دوره - {{ course.title }}{% endblock %}
+
+{% block content %}
+<section style="max-width: 800px; margin: 40px auto; padding: 0 15px; font-family: sans-serif;">
+  <h1 style="text-align: center; margin-bottom: 30px;">محتوای دوره: {{ course.title }}</h1>
+
+  {% if lessons %}
+    {% for lesson in lessons %}
+      <article style="border: 1px solid #ddd; padding: 20px; margin-bottom: 30px; border-radius: 5px; box-shadow: 1px 1px 5px rgba(0,0,0,0.1);">
+        <h2 style="margin-bottom: 15px;">درس {{ lesson.order }}: {{ lesson.title }}</h2>
+        <div class="lesson-content" style="line-height: 1.6; color: #333;">
+          {{ lesson.content|safe }}
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <p style="text-align: center; color: #777;">هیچ درس‌نامه‌ای برای این دوره ثبت نشده است.</p>
+  {% endif %}
+</section>
+{% endblock %}

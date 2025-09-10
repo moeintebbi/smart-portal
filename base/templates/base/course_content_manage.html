@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}مدیریت محتوای دوره - {{ course.title }}{% endblock %}
+
+{% block content %}
+<section class="container mt-5">
+  <h2 class="mb-4 text-center">مدیریت محتوای دوره: {{ course.title }}</h2>
+
+  <!-- فرم افزودن محتوای جدید -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-header bg-primary text-white">
+      افزودن محتوای جدید
+    </div>
+    <div class="card-body">
+      <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+        <div class="col-md-6">
+          <label for="file_type" class="form-label">نوع محتوا</label>
+          <select name="file_type" class="form-select" required>
+            <option value="video">🎥 ویدیو</option>
+            <option value="image">🖼️ تصویر</option>
+            <option value="document">📄 درسنامه (PDF)</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="title" class="form-label">عنوان محتوا</label>
+          <input type="text" name="title" class="form-control" required>
+        </div>
+        <div class="col-12">
+          <label for="description" class="form-label">توضیح کوتاه</label>
+          <textarea name="description" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="col-12">
+          <label for="file" class="form-label">فایل</label>
+          <input type="file" name="file" class="form-control" required>
+        </div>
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-success">➕ افزودن</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- لیست فایل‌های موجود -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white">
+      فایل‌های بارگذاری‌شده
+    </div>
+    <div class="card-body">
+      {% if contents %}
+        <div class="table-responsive">
+          <table class="table table-striped align-middle text-center">
+            <thead>
+              <tr>
+                <th>نوع</th>
+                <th>عنوان</th>
+                <th>توضیح</th>
+                <th>پیش‌نمایش / دانلود</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for content in contents %}
+              <tr>
+                <td>
+                  {% if content.file_type == 'video' %}🎥{% elif content.file_type == 'image' %}🖼️{% else %}📄{% endif %}
+                </td>
+                <td>{{ content.title }}</td>
+                <td>{{ content.description|default:"—" }}</td>
+                <td>
+                  {% if content.file_type == 'image' %}
+                    <img src="{{ content.file.url }}" alt="image" style="max-height: 80px;">
+                  {% elif content.file_type == 'video' %}
+                    <video src="{{ content.file.url }}" controls style="max-height: 80px;"></video>
+                  {% else %}
+                    <a href="{{ content.file.url }}" class="btn btn-sm btn-outline-primary" download>📄 دانلود</a>
+                  {% endif %}
+                </td>
+                <td>
+                  <form method="post" action="{% url 'delete_course_file' content.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('مطمئن هستید؟')">
+                      🗑️ حذف
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted text-center">هنوز محتوایی برای این دوره بارگذاری نشده است.</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

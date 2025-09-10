@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path , include
 from . import views
 from django.contrib.auth import views as auth_views
 from django.conf.urls.static import static
@@ -24,6 +24,15 @@ urlpatterns = [
     path('verify-code' , views.verfy_reset_code , name='password_reset_verify'),
     path('courses/<int:course_id>/remove-student/<int:student_id>/' , views.remove_student_from_course , name='remove_student_from_course'),
     path('student/calendar/' , views.student_calendar , name='student_calendar'),
+    path('course/<int:course_id>/files', views.course_files_view, name='course_files'),
+    path('course/<int:course_id>/content/', views.course_content_view, name='course_content'),
+    path('course/<int:course_id>/lessons/add/', views.lesson_create_view, name='lesson_create'),
+    path('course/<int:course_id>/lessons/list' , views.lesson_list_view , name='lesson_list'),
+    path('course/<int:course_id>/lessons/<int:lesson_id>/edit', views.lesson_edit_view, name='lesson_edit'),
+    path('course/<int:course_id>/lessons/<int:lesson_id>/delete', views.lesson_delete_view, name='lesson_delete'),
+
+
+
 
 ]
 

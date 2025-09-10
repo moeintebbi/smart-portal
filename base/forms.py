@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User , Course , Comment
+from .models import User , Course , Comment , Lesson
+from django_summernote.widgets import SummernoteWidget
 
 class Registerform(UserCreationForm):
     class Meta:
@@ -26,8 +27,6 @@ class CourseForm(forms.ModelForm):
 class StudentInfoForm(forms.Form):
     full_name = forms.CharField(label= 'نام و نام خانوادگی خود را وارد کنید' , max_length=100)
     email = forms.EmailField(label='ایمیل خود را وارد کنید')
-    national_id = forms.IntegerField(label='کد ملی خود را وارد کنید')
-    phone_number = forms.IntegerField(label='شماره موبایل خود را وارد کنید')
     education_level = forms.CharField(label='مقطع تحصیلی خود را وارد کنید' , max_length=100)
     
 
@@ -61,3 +60,14 @@ class CodeVerficationForm(forms.Form):
         'placeholder': 'رمز عبور جدید',
         'id': 'new_password'
     }))
+
+
+class LessonForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['title', 'content', 'order']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control'}),
+            'content':SummernoteWidget()
+            }

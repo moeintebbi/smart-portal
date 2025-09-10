@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 p-4">
+        <h3 class="mb-4 text-center text-primary">مدیریت فایل‌های دوره: {{ course.title }}</h3>
+
+        <form method="POST" enctype="multipart/form-data" class="mb-5">
+            {% csrf_token %}
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">عنوان فایل</label>
+                    {{ form.title|add_class:"form-control" }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">نوع فایل</label>
+                    {{ form.file_type|add_class:"form-select" }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">آپلود فایل</label>
+                    {{ form.file|add_class:"form-control" }}
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-success w-100">افزودن</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- لیست فایل‌ها -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>عنوان</th>
+                        <th>نوع</th>
+                        <th>تاریخ آپلود</th>
+                        <th>مشاهده</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td>{{ file.title }}</td>
+                            <td>{{ file.get_file_type_display }}</td>
+                            <td>{{ file.uploaded_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <a href="{{ file.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">نمایش</a>
+                            </td>
+                            <td>
+                                <a href="{% url 'delete_course_file' file.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('آیا از حذف این فایل مطمئن هستید؟')">
+                                    حذف
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">فایلی برای این دوره ثبت نشده است.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'my_courses' %}" class="btn btn-secondary">بازگشت به دوره‌های من</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

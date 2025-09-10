@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container mt-4">
+  <h3 class="mb-4">📎 فایل‌های دوره: {{ course.title }}</h3>
+  {% if files %}
+    <ul class="list-group">
+      {% for f in files %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ f.title }}
+          <a href="{{ f.file.url }}" class="btn btn-sm btn-outline-primary" download>دانلود</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">هیچ فایلی برای این دوره بارگذاری نشده است.</p>
+  {% endif %}
+</section>
+{% endblock %}

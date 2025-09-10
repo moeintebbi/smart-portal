@@ -1,91 +1,118 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block title %}جزئیات دوره برای مدیر{% endblock %}
 
 {% block content %}
 <section class="page-section">
-    <div class="container px-4 px-lg-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow border-0 mb-4">
-                    {% if course.image %}
-                    <img src="{{ course.image.url }}" class="card-img-top rounded-0" alt="{{ course.title }}" style="height: 300px; object-fit: cover;">
-                    {% endif %}
-                    <div class="card-body">
-                        <h3 class="card-title mb-3 text-primary">{{ course.title }}</h3>
-                        <p class="card-text">{{ course.descriptions }}</p>
+  <div class="container px-4 px-lg-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow border-0 mb-4">
 
-                        <div class="mb-2">
-                            <strong>روزهای برگزاری:</strong>
-                            {% if course.days.all %}
-                                {% for day in course.days.all %}
-                                    {{ day.name }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <span class="text-muted">مشخص نشده</span>
-                            {% endif %}
-                        </div>
+          {% if course.image %}
+            <img src="{{ course.image.url }}" class="card-img-top rounded-0" alt="{{ course.title }}" style="height: 300px; object-fit: cover;">
+          {% endif %}
 
-                        <div class="mb-2">
-                            <strong>ساعت برگزاری:</strong>
-                            {{ course.start_time }} تا {{ course.end_time }}
-                        </div>
+          <div class="card-body">
+            <h3 class="card-title mb-3 text-primary">{{ course.title }}</h3>
+            <p class="card-text">{{ course.descriptions }}</p>
 
-                        <div class="mb-2">
-                            <strong>ظرفیت باقی‌مانده:</strong> {{ course.capacity }}
-                        </div>
-
-                        <div class="mb-2">
-                            <strong>پیش‌نیازها:</strong>
-                            {% if course.prerequisites.all %}
-                                {% for prereq in course.prerequisites.all %}
-                                    {{ prereq.title }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <span class="text-muted">ندارد</span>
-                            {% endif %}
-                        </div>
-
-                        <hr>
-                        <h5 class="mb-3">دانشجویان ثبت‌نام‌شده</h5>
-                        {% if registrations %}
-                            <ul class="list-group list-group-flush">
-                                {% for reg in registrations %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            {{ reg.student.user.username }} ({{ reg.student.student_id }})<br>
-                                            <small class="text-muted">{{ reg.reg_start|date:"Y-m-d H:i" }}</small>
-                                        </div>
-                                        <form action="{% url 'remove_student_from_course' course.id reg.student.id %}" method="post" onsubmit="return confirm('آیا از حذف این دانشجو از دوره مطمئن هستید؟')" class="ms-2">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>
-                                        </form>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p class="text-muted">هنوز هیچ دانشجویی ثبت‌نام نکرده است.</p>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-footer d-flex flex-wrap justify-content-between gap-2 bg-light">
-                        <a href="{% url 'edit_course' course.id %}" class="btn btn-outline-warning">
-                            ✏️ ویرایش دوره
-                        </a>
-                        <form action="{% url 'delete_course' course.id %}" method="post" onsubmit="return confirm('آیا از حذف دوره مطمئن هستید؟')">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger">
-                                🗑️ حذف دوره
-                            </button>
-                        </form>
-                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
-                            ⬅ بازگشت به داشبورد
-                        </a>
-                    </div>
-                </div>
+            <div class="mb-2">
+              <strong>روزهای برگزاری:</strong>
+              {% if course.days.all %}
+                {% for day in course.days.all %}
+                  {{ day.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% else %}
+                <span class="text-muted">مشخص نشده</span>
+              {% endif %}
             </div>
+
+            <div class="mb-2">
+              <strong>ساعت برگزاری:</strong>
+              {{ course.start_time }} تا {{ course.end_time }}
+            </div>
+
+            <div class="mb-2">
+              <strong>ظرفیت باقی‌مانده:</strong> {{ course.capacity }}
+            </div>
+
+            <div class="mb-2">
+              <strong>پیش‌نیازها:</strong>
+              {% if course.prerequisites.all %}
+                {% for prereq in course.prerequisites.all %}
+                  {{ prereq.title }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              {% else %}
+                <span class="text-muted">ندارد</span>
+              {% endif %}
+            </div>
+
+            <hr>
+            <h5 class="mb-3">دانشجویان ثبت‌نام‌شده</h5>
+            {% if registrations %}
+              <ul class="list-group list-group-flush">
+                {% for reg in registrations %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      {{ reg.student.user.username }} ({{ reg.student.student_id }})<br>
+                      <small class="text-muted">{{ reg.reg_start|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <form action="{% url 'remove_student_from_course' course.id reg.student.id %}" method="post" onsubmit="return confirm('آیا از حذف این دانشجو از دوره مطمئن هستید؟')" class="ms-2">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted">هنوز هیچ دانشجویی ثبت‌نام نکرده است.</p>
+            {% endif %}
+
+            <hr>
+            <h5 class="mb-3">درس‌نامه‌ها</h5>
+            {% if lessons %}
+              {% for lesson in lessons %}
+                <div class="card mb-4 shadow-sm border-0">
+                  <div class="card-header bg-light">
+                    <strong>درس {{ lesson.order }}: {{ lesson.title }}</strong>
+                  </div>
+                  <div class="card-body">
+                    {{ lesson.content|safe }}
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted">هیچ درس‌نامه‌ای برای این دوره ثبت نشده است.</p>
+            {% endif %}
+
+          </div>
+
+          <div class="card-footer d-flex flex-wrap justify-content-between gap-2 bg-light">
+            <a href="{% url 'edit_course' course.id %}" class="btn btn-outline-warning">
+              ✏️ ویرایش دوره
+            </a>
+
+            <a href="{% url 'lesson_create' course.id %}" class="btn btn-outline-primary">➕ افزودن درس‌نامه</a>
+
+
+            <form action="{% url 'delete_course' course.id %}" method="post" onsubmit="return confirm('آیا از حذف دوره مطمئن هستید؟')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger">
+                🗑️ حذف دوره
+              </button>
+            </form>
+
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+              ⬅ بازگشت به داشبورد
+            </a>
+          </div>
+
         </div>
+      </div>
     </div>
+  </div>
 </section>
 {% endblock %}

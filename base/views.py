@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Course, StudentProfile, Registration , Comment , PasswordRestCode
-from .forms import Registerform , CourseForm , StudentInfoForm , CommentForm , PasswordRestRequestForm , CodeVerficationForm
+from .models import Course, StudentProfile, Registration , Comment , PasswordRestCode , Lesson
+from .forms import Registerform , CourseForm , StudentInfoForm , CommentForm , PasswordRestRequestForm , CodeVerficationForm , LessonForm
 from django.views.decorators.http import require_POST
 import random
 from django.core.mail import send_mail
@@ -19,12 +19,15 @@ def register_viwe(request):
     if request.method == 'POST':
         form = Registerform(request.POST)
         if form.is_valid():
-            user = form.save()
-            StudentProfile.objects.create(user=user, student_id = 's' + str(user.id))
+            user = form.save(commit=False)   
+            user.role = "student"            
+            user.save()                     
+            StudentProfile.objects.create(user=user, student_id='s' + str(user.id))
             return redirect('home')
     else:
         form = Registerform()
-    return render(request, 'base/register.html', {'form':form})
+    return render(request, 'base/register.html', {'form': form})
+
 
 @login_required
 def course_list(request):
@@ -344,3 +347,119 @@ def student_calendar(request):
                 })
 
     return render(request , 'base/student_calendar.html' , {'events': evernts})
+
+
+@login_required
+def course_content_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    # بررسی اینکه کاربر یک دانشجوی واقعی است
+    if not hasattr(request.user, 'studentprofile'):
+        messages.error(request, "فقط دانشجویان می‌توانند به این صفحه دسترسی داشته باشند.")
+        return redirect('home')
+
+    student_profile = request.user.studentprofile
+
+    # بررسی اینکه کاربر در این دوره ثبت‌نام نهایی شده است
+    if not Registration.objects.filter(course=course, student=student_profile).exists():
+        messages.error(request, "شما در این دوره ثبت‌نام نهایی نشده‌اید.")
+        return redirect('my_courses')
+
+    # دریافت تمام درس‌نامه‌ها بر اساس ترتیب
+    lessons = course.lessons.all().order_by('order')
+
+    return render(request, 'base/course_content.html', {
+        'course': course,
+        'lessons': lessons,
+    })
+
+
+
+@login_required
+def lesson_list_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id, created_by=request.user)
+    lessons = course.lessons.all().order_by('order')
+    return render(request, 'base/lesson_list.html', {
+        'course': course,
+        'lessons': lessons
+    })
+
+@login_required
+def lesson_create_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id, created_by=request.user)
+    if request.method == 'POST':
+        form = LessonForm(request.POST , request.FILES)
+        if form.is_valid():
+            lesson = form.save(commit=False)
+            lesson.course = course
+            lesson.save()
+            messages.success(request, 'درس‌نامه با موفقیت اضافه شد.')
+            return redirect('lesson_list', course_id=course.id)
+    else:
+        form = LessonForm()
+    return render(request, 'base/lesson_form.html', {
+        'course': course,
+        'form': form,
+        'mode': 'create',
+    })
+
+@login_required
+def lesson_edit_view(request, course_id, lesson_id):
+    course = get_object_or_404(Course, id=course_id, created_by=request.user)
+    lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
+    if request.method == 'POST':
+        form = LessonForm(request.POST, request.FILES ,instance=lesson)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'درس‌نامه با موفقیت ویرایش شد.')
+            return redirect('lesson_list', course_id=course.id)
+    else:
+        form = LessonForm(instance=lesson)
+    return render(request, 'base/lesson_form.html', {
+        'course': course,
+        'form': form,
+        'mode': 'edit',
+    })
+
+@login_required
+def lesson_delete_view(request, course_id, lesson_id):
+    course = get_object_or_404(Course, id=course_id, created_by=request.user)
+    lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
+    if request.method == 'POST':
+        lesson.delete()
+        messages.success(request, 'درس‌نامه با موفقیت حذف شد.')
+        return redirect('lesson_list', course_id=course.id)
+    return render(request, 'base/lesson_confirm_delete.html', {
+        'course': course,
+        'lesson': lesson
+    })
+
+def course_lessons_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    lessons = course.lessons.all().order_by('order')
+    return render(request, 'base/course_lessons.html', {
+        'course': course,
+        'lessons': lessons
+    })
+
+@login_required
+def course_files_view(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    # بررسی اینکه کاربر دانشجوی ثبت‌نام‌شده است
+    if not hasattr(request.user, 'studentprofile'):
+        messages.error(request, "فقط دانشجویان می‌توانند به این صفحه دسترسی داشته باشند.")
+        return redirect('home')
+
+    student_profile = request.user.studentprofile
+
+    if not Registration.objects.filter(course=course, student=student_profile).exists():
+        messages.error(request, "شما در این دوره ثبت‌نام نشده‌اید.")
+        return redirect('my_courses')
+
+    files = course.files.all().order_by('-uploaded_at')
+
+    return render(request, 'base/course_files.html', {
+        'course': course,
+        'files': files
+    })

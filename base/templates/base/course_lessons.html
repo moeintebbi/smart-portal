@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}درس‌نامه‌های دوره - {{ course.title }}{% endblock %}
+
+{% block content %}
+<section class="container mt-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">📚 درس‌نامه‌های دوره: {{ course.title }}</h2>
+    <hr class="divider" />
+  </div>
+
+  {% if lessons %}
+    {% for lesson in lessons %}
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ lesson.title }}</h5>
+          <div class="lesson-content mb-2">
+            {{ lesson.content|safe }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted text-center">هیچ درس‌نامه‌ای برای این دوره ثبت نشده است.</p>
+  {% endif %}
+</section>
+{% endblock %}

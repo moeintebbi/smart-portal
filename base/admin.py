@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Course , User , AdminProfile , StudentProfile , Registration, Day
+from .models import Course , User , AdminProfile , StudentProfile , Registration, Day , Lesson
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
@@ -35,3 +35,8 @@ class CourseAdmin(admin.ModelAdmin):
         return ", ".join([day.name for day in obj.days.all()])
     get_days.short_description = 'روزها'
 admin.site.register(Day)
+
+
+@admin.register(Lesson)
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ('title', 'order', 'course')  # یا هر فیلدی که دوست داری
